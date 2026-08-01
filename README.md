@@ -134,6 +134,13 @@ The whole pipeline is automated so it "just works" — it generates the signing
 keystore if missing, signs the APK, and verifies the signature. See
 [`android/RELEASE_BUILD.md`](android/RELEASE_BUILD.md) for the complete guide.
 
+**Easiest — Command Prompt** (from `android/`):
+
+```bat
+cd android
+build
+```
+
 **Windows PowerShell** (from `android/`):
 
 ```powershell

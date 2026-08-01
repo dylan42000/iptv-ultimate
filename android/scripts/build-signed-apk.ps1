@@ -1,5 +1,5 @@
-# ===========================================================================
-#  DYLANDOS IPTV ULTIMATE — Build a Signed Release APK (Windows PowerShell)
+﻿# ===========================================================================
+#  DYLANDOS IPTV ULTIMATE - Build a Signed Release APK (Windows PowerShell)
 # ===========================================================================
 #  The one-stop, foolproof command to produce a signed release APK for the
 #  FireStick. It:
@@ -9,6 +9,9 @@
 #     4. Runs `assembleFirestickRelease`.
 #     5. Copies the signed APK into `android\dist` with a clean, dated name and
 #        verifies it with apksigner.
+#
+#  NOTE: This file is pure ASCII (no em-dashes/smart quotes) so it parses
+#  correctly on Windows PowerShell 5.1.
 #
 #  Usage (PowerShell, from the `android` directory):
 #      powershell -ExecutionPolicy Bypass -File scripts\build-signed-apk.ps1
@@ -23,7 +26,7 @@ Set-Location $root
 
 Write-Host ""
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host "  DYLANDOS IPTV ULTIMATE — Signed FireStick Release Build " -ForegroundColor Cyan
+Write-Host "  DYLANDOS IPTV ULTIMATE - Signed FireStick Release Build " -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -46,7 +49,7 @@ $alias     = "dylandos"
 $password  = "dylandos2026"
 
 if (-not (Test-Path $keystorePath)) {
-    Write-Host "[INFO] No release keystore found — generating one for you..." -ForegroundColor Cyan
+    Write-Host "[INFO] No release keystore found - generating one for you..." -ForegroundColor Cyan
     & powershell -ExecutionPolicy Bypass -File (Join-Path $root "scripts\generate-keystore.ps1")
     if (-not (Test-Path $keystorePath)) {
         Write-Host "[ERROR] Could not create keystore. Aborting." -ForegroundColor Red
@@ -63,15 +66,16 @@ if (-not (Test-Path $keystorePath)) {
 $ksProps = Join-Path $root "keystore.properties"
 if (-not (Test-Path $ksProps)) {
     $storeFileRel = "app/dylandos-release.jks"
-    @"
-storeFile=$storeFileRel
-keyAlias=$alias
-storePassword=$password
-keyPassword=$password
-"@ | Set-Content -Path $ksProps -Encoding Ascii
+    $lines = @(
+        "storeFile=$storeFileRel",
+        "keyAlias=$alias",
+        "storePassword=$password",
+        "keyPassword=$password"
+    )
+    Set-Content -Path $ksProps -Value $lines -Encoding Ascii
     Write-Host "[OK] Wrote keystore.properties (storeFile=$storeFileRel)"
 } else {
-    Write-Host "[OK] keystore.properties already present — keeping it."
+    Write-Host "[OK] keystore.properties already present - keeping it."
 }
 
 # ---------------------------------------------------------------------------
@@ -80,7 +84,6 @@ keyPassword=$password
 Write-Host ""
 Write-Host "[BUILD] Running: .\gradlew assembleFirestickRelease" -ForegroundColor Cyan
 
-# Make sure the wrapper script is executable on Windows.
 $gradlew = Join-Path $root "gradlew.bat"
 if (-not (Test-Path $gradlew)) {
     Write-Host "[ERROR] gradlew.bat not found. This distribution should include it." -ForegroundColor Red
@@ -124,12 +127,12 @@ if ($apksigner) {
     Write-Host "[VERIFY] Checking signature with apksigner..." -ForegroundColor Cyan
     & $apksigner.FullName verify --verbose $dest
 } else {
-    Write-Host "[INFO] apksigner not found under default SDK path — skipping automatic verify."
+    Write-Host "[INFO] apksigner not found under default SDK path - skipping automatic verify."
     Write-Host "       You can verify manually:  apksigner verify --verbose $dest"
 }
 
 Write-Host ""
 Write-Host "==========================================================" -ForegroundColor Green
-Write-Host "  DONE — transfer $dest to your FireStick (e.g. via adb install or a file manager + 'Downloader' app)." -ForegroundColor Green
+Write-Host "  DONE - transfer $dest to your FireStick (e.g. via adb install or a file manager + 'Downloader' app)." -ForegroundColor Green
 Write-Host "==========================================================" -ForegroundColor Green
 Write-Host ""

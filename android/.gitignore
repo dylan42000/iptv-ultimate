@@ -18,3 +18,4 @@ keystore.properties
 # Built APKs
 /dist/
 *.apk
+*.zip

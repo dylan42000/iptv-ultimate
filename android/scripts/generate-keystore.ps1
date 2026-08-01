@@ -1,9 +1,11 @@
+﻿# ===========================================================================
+#  DYLANDOS IPTV ULTIMATE - Release Keystore Generator (Windows PowerShell)
 # ===========================================================================
-#  DYLANDOS IPTV ULTIMATE — Release Keystore Generator (Windows PowerShell)
-# ===========================================================================
-#  Creates `app/dylandos-release.jks` using keytool from the JDK on PATH.
+#  Creates `app\dylandos-release.jks` using keytool from the JDK on PATH.
 #  This is the SAME keystore you use to sign every release APK, so store it
 #  somewhere safe and back it up. If you lose it you cannot update the app.
+#
+#  NOTE: This file is pure ASCII so it parses on Windows PowerShell 5.1.
 #
 #  Usage:
 #      powershell -ExecutionPolicy Bypass -File scripts\generate-keystore.ps1

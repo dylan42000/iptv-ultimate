@@ -8,8 +8,23 @@ written for **Windows 11 Pro** (the shell scripts also work on macOS/Linux).
 
 ## TL;DR (Windows)
 
+### Easiest — Command Prompt (`build.bat`, no PowerShell)
+Open Command Prompt, `cd` into the `android` folder, then type:
+
+```
+build
+```
+
+That's it. `build.bat` finds your JDK, creates the signing keystore (first run),
+signs the app, builds the FireStick flavor, copies the APK to `android\dist\`, and
+verifies the signature. If your JDK isn't found automatically, run this first:
+
+```
+set JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot
+```
+
+### PowerShell (alternative)
 ```powershell
-cd android
 $env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot"
 powershell -ExecutionPolicy Bypass -File scripts\build-signed-apk.ps1
 ```
@@ -56,26 +71,37 @@ downloads Gradle automatically — you do **not** install Gradle yourself.
 
 ## Option A — One-command script (recommended)
 
+### A1 · Command Prompt (Windows) — `build.bat`
+```bat
+cd android
+build
+```
+Optionally set `JAVA_HOME` first if your JDK isn't auto-detected:
+```bat
+set JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot
+build
+```
+
+### A2 · PowerShell (Windows) — `scripts\build-signed-apk.ps1`
 ```powershell
 cd android
 $env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot"
 powershell -ExecutionPolicy Bypass -File scripts\build-signed-apk.ps1
 ```
 
-What it does:
-1. Validates `JAVA_HOME`.
-2. Creates `app\dylandos-release.jks` if missing.
-3. Writes `keystore.properties` (only if absent).
-4. Runs `.\gradlew assembleFirestickRelease`.
-5. Copies the signed APK to `android\dist\` with a dated name.
-6. Verifies the signature with `apksigner`.
-
-macOS / Linux:
-
+### A3 · macOS / Linux — `scripts/build-signed-apk.sh`
 ```bash
 cd android
 ./scripts/build-signed-apk.sh
 ```
+
+All three do the same thing:
+1. Validate the JDK.
+2. Create `app\dylandos-release.jks` if missing.
+3. Write `keystore.properties` (only if absent).
+4. Run `assembleFirestickRelease`.
+5. Copy the signed APK to `android\dist\` with a dated name.
+6. Verify the signature with `apksigner`.
 
 ---
 
