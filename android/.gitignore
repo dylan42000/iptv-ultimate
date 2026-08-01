@@ -1,0 +1,21 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+**/build/
+app/schemas/.gitkeep
+
+# Release keystore + signing props — NEVER commit these.
+*.jks
+keystore.properties
+
+# Built APKs
+/dist/
+*.apk
+*.zip

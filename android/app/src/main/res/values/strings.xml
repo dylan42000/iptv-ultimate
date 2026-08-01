@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">DYLANDOS IPTV</string>
+    <string name="app_short_name">Dylandos</string>
+    <string name="nav_live_tv">Live TV</string>
+    <string name="nav_movies">Movies</string>
+    <string name="nav_series">Series</string>
+    <string name="nav_dvr">DVR</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_manage_categories">Manage Categories</string>
+    <string name="no_content">No content available</string>
+    <string name="loading">Loading…</string>
+    <string name="record">Record</string>
+    <string name="stop">Stop</string>
+    <string name="play_pause">Play / Pause</string>
+    <string name="subtitle">Subtitles</string>
+    <string name="audio_track">Audio</string>
+    <string name="timeshift">Timeshift</string>
+</resources>

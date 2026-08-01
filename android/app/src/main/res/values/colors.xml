@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="brand_primary">#E50914</color>
+    <color name="brand_accent">#FFD54F</color>
+    <color name="surface_dark">#0F1115</color>
+    <color name="surface_card">#1A1E26</color>
+    <color name="ic_launcher_background">#0F1115</color>
+</resources>
