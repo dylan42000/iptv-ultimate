@@ -121,26 +121,66 @@ android/
 
 ## Building
 
+**DYLANDOS IPTV ULTIMATE is a FireStick-first application.** The `Firestick`
+flavor is the flagship target (2 GB-class optimizations, `arm64-v8a` + `armeabi-v7a`
+ABIs). A `Generic` flavor (`x86_64` included) targets emulators and other TV boxes.
+
 A Gradle wrapper distribution is pinned in `gradle/wrapper/gradle-wrapper.properties`
-(Gradle 8.9). With the Android SDK installed and a JDK 17+ on `JAVA_HOME`:
+(Gradle 8.9). With the Android SDK installed and a JDK 17+ on `JAVA_HOME`.
 
-```bash
-cd android
-export JAVA_HOME="/path/to/jdk-17"
-./gradlew assembleFirestickRelease        # or: assembleGenericDebug for testing
-```
+### ⭐ Build a signed FireStick release APK (foolproof, one command)
 
-On Windows PowerShell (per the build protocol):
+The whole pipeline is automated so it "just works" — it generates the signing
+keystore if missing, signs the APK, and verifies the signature. See
+[`android/RELEASE_BUILD.md`](android/RELEASE_BUILD.md) for the complete guide.
+
+**Windows PowerShell** (from `android/`):
 
 ```powershell
 cd android
 $env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot"
-./gradlew assembleFirestickRelease
+powershell -ExecutionPolicy Bypass -File scripts\build-signed-apk.ps1
+```
+
+**macOS / Linux:**
+
+```bash
+cd android
+./scripts/build-signed-apk.sh
+```
+
+The signed APK lands in `android/dist/DylandosIPTV-Firestick-v1.0.0-<date>.apk`.
+
+Or manually:
+
+```powershell
+cd android
+$env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot"
+.\gradlew assembleFirestickRelease
+# signed output: app\build\outputs\apk\firestick\release\app-firestick-release.apk
 ```
 
 ### Flavor dimensions
-- `Firestick` — `BuildConfig.TARGET_MEMORY_MB = 2048` (2 GB-class optimizations).
-- `Generic` — `BuildConfig.TARGET_MEMORY_MB = 4096`.
+- **`Firestick`** — `BuildConfig.TARGET_MEMORY_MB = 2048` (2 GB-class optimizations).
+  Packaged ABIs: `arm64-v8a`, `armeabi-v7a`.
+- **`Generic`** — `BuildConfig.TARGET_MEMORY_MB = 4096`. Packaged ABIs include
+  `x86_64` for emulator testing.
+
+Common tasks: `assembleFirestickRelease`, `assembleFirestickDebug`,
+`assembleGenericDebug` (emulator), `assembleGenericRelease`.
+
+### Signing
+- `scripts/generate-keystore.ps1` — creates `app/dylandos-release.jks` (RSA 4096).
+- `keystore.properties` (git-ignored) drives signing; `build-signed-apk.*` writes
+  it automatically. If absent, the release task falls back to the debug keystore
+  so the build never fails.
+- **Back up the keystore** — you cannot update a released app without it.
+
+### Remote / D-pad mapping
+All FireStick remote & gamepad keys are mapped in one place
+(`ui/input/FireStickKeys.kt`): DPAD_CENTER / ENTER / NUMPAD_ENTER are collapsed to
+one logical "ACTIVATE", and media-transport keys are forwarded to the active
+player regardless of screen.
 
 ---
 

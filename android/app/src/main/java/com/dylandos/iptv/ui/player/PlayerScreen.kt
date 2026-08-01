@@ -29,8 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -41,6 +39,8 @@ import com.dylandos.iptv.data.entity.ProgramEntity
 import com.dylandos.iptv.media.PlaybackState
 import com.dylandos.iptv.media.StreamDiagnostics
 import com.dylandos.iptv.ui.components.GlassPanel
+import com.dylandos.iptv.ui.input.FireStickKeys
+import com.dylandos.iptv.ui.input.toFireStickAction
 import com.dylandos.iptv.ui.theme.BrandRed
 import com.dylandos.iptv.ui.theme.OnDarkHigh
 import com.dylandos.iptv.ui.theme.OnDarkLow
@@ -84,15 +84,21 @@ fun PlayerScreen(
             .fillMaxSize()
             .background(Color.Black)
             .onPreviewKeyEvent { event ->
-                when (event.key) {
-                    Key.DirectionUp, Key.DirectionDown, Key.DirectionCenter, Key.Enter, Key.NumPadEnter -> {
+                when (event.toFireStickAction()) {
+                    FireStickKeys.Action.UP,
+                    FireStickKeys.Action.DOWN,
+                    FireStickKeys.Action.ACTIVATE -> {
                         osdVisible = !osdVisible
                         true
                     }
-                    Key.MediaPlayPause, Key.Spacebar -> {
-                        controller.togglePlayPause(); true
-                    }
-                    Key.Back -> { onBack(); true }
+                    FireStickKeys.Action.PLAY_PAUSE -> { controller.togglePlayPause(); true }
+                    FireStickKeys.Action.PLAY -> { controller.play(); true }
+                    FireStickKeys.Action.PAUSE -> { controller.pause(); true }
+                    FireStickKeys.Action.REWIND -> { controller.rewind(15); true }
+                    FireStickKeys.Action.FAST_FORWARD -> { controller.fastForward(15); true }
+                    FireStickKeys.Action.SUBTITLE -> { controller.nextSubtitleTrack(); true }
+                    FireStickKeys.Action.AUDIO_TRACK -> { controller.nextAudioTrack(); true }
+                    FireStickKeys.Action.BACK -> { onBack(); true }
                     else -> false
                 }
             }
