@@ -37,7 +37,7 @@ private val Context.settingsDataStore: DataStore<Preferences> by preferencesData
  */
 @Singleton
 class SettingsRepository @Inject constructor(
-    context: Context
+    @dagger.hilt.android.qualifiers.ApplicationContext context: Context
 ) {
     private val store: DataStore<Preferences> = context.applicationContext.settingsDataStore
 
