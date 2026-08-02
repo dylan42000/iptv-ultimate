@@ -28,7 +28,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class LibVlcEngine(
-    @androidx.hilt.android.qualifiers.ApplicationContext private val context: Context,
+    @dagger.hilt.android.qualifiers.ApplicationContext private val context: Context,
     private val libVLC: LibVLC,
     private val rollingFileRecorder: RollingFileRecorder
 ) : MediaEngine {
