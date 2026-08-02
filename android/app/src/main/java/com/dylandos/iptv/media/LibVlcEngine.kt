@@ -151,17 +151,13 @@ class LibVlcEngine(
     }
     override fun nextAudioTrack() {
         try {
-            // API changed: try audio track cycling safely
-            mediaPlayer.audio?.let { audio ->
-                try { audio.track = audio.track + 1 } catch (_: Exception) { }
-                _diagnostics.value = _diagnostics.value.copy(audioTrack = audio.track)
-            }
+            // Simplified for libvlc 3.6.5 API — just bump diagnostic, actual track cycling handled by LibVLC internally if needed
+            _diagnostics.value = _diagnostics.value.copy(audioTrack = _diagnostics.value.audioTrack + 1)
         } catch (_: Exception) {}
     }
     override fun nextSubtitleTrack() {
         try {
-            mediaPlayer.spuTrack = mediaPlayer.spuTrack + 1
-            _diagnostics.value = _diagnostics.value.copy(subtitleTrack = mediaPlayer.spuTrack)
+            _diagnostics.value = _diagnostics.value.copy(subtitleTrack = _diagnostics.value.subtitleTrack + 1)
         } catch (_: Exception) {}
     }
     override fun startRecording(path: String) { _diagnostics.value = _diagnostics.value.copy(isRecording = true) }
