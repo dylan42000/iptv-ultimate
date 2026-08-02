@@ -6,20 +6,20 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
-      - uses: android-actions/setup-android@v3
-      - run: yes | sdkmanager --licenses
-        shell: bash
-      - run: sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
-        shell: bash
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: Generate keystore
-        shell: bash
         run: |
           cd android
           if [ ! -f app/dylandos-release.jks ]; then
@@ -31,12 +31,15 @@ jobs:
             echo "storePassword=dylandos2026" >> keystore.properties
             echo "keyPassword=dylandos2026" >> keystore.properties
           fi
-      - name: Build
-        shell: bash
+
+      - name: Build Firestick Release
         run: |
           cd android
+          chmod +x gradlew
           ./gradlew assembleFirestickRelease --no-configuration-cache --stacktrace
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload signed APK
+        uses: actions/upload-artifact@v4
         with:
           name: DylandosIPTV-Firestick-signed
           path: android/app/build/outputs/apk/firestick/release/*.apk
