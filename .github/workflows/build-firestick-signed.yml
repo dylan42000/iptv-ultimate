@@ -38,15 +38,33 @@ jobs:
           echo "" >> build.log
           echo "EXIT_CODE=$STATUS" >> build.log
           exit $STATUS
+
+      - name: Find and copy APKs
+        if: always()
+        run: |
+          echo "=== Searching for APKs ==="
+          find android -type f -name "*.apk" -exec ls -lh {} \; || echo "No APK found via find"
+          echo "=== Listing build outputs ==="
+          ls -R android/app/build/outputs/apk/ 2>&1 || echo "No outputs dir"
+          mkdir -p android/dist
+          find android/app/build/outputs -type f -name "*.apk" -exec cp -v {} android/dist/ \; || true
+          ls -lh android/dist/ || true
+          DATE=$(date +%Y%m%d)
+          for apk in android/dist/*.apk; do
+            if [ -f "$apk" ]; then
+              cp "$apk" "android/dist/DylandosIPTV-Firestick-v1.0.0-${DATE}.apk" || true
+            fi
+          done
+          ls -lh android/dist/
+
       - name: Upload APK if built
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: DylandosIPTV-Firestick-signed
-          path: |
-            android/app/build/outputs/apk/firestick/release/*.apk
-            android/dist/*.apk
+          path: android/dist/*.apk
           if-no-files-found: warn
+
       - name: Upload build log
         if: always()
         uses: actions/upload-artifact@v4
