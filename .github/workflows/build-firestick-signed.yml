@@ -9,16 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
-
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
-
       - name: Generate keystore
         run: |
           cd android
@@ -31,15 +28,16 @@ jobs:
             echo "storePassword=dylandos2026" >> keystore.properties
             echo "keyPassword=dylandos2026" >> keystore.properties
           fi
-
       - name: Build Firestick Release
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleFirestickRelease --no-configuration-cache --stacktrace | tee build.log
-          echo "EXIT_CODE=${PIPESTATUS[0]}" | tee -a build.log
-          exit ${PIPESTATUS[0]}
-
+          set -o pipefail
+          ./gradlew assembleFirestickRelease --no-configuration-cache --stacktrace 2>&1 | tee build.log
+          STATUS=${PIPESTATUS[0]}
+          echo "" >> build.log
+          echo "EXIT_CODE=$STATUS" >> build.log
+          exit $STATUS
       - name: Upload APK if built
         if: always()
         uses: actions/upload-artifact@v4
@@ -49,7 +47,6 @@ jobs:
             android/app/build/outputs/apk/firestick/release/*.apk
             android/dist/*.apk
           if-no-files-found: warn
-
       - name: Upload build log
         if: always()
         uses: actions/upload-artifact@v4
