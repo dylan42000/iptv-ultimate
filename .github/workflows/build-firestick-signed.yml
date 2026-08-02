@@ -36,10 +36,23 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleFirestickRelease --no-configuration-cache --stacktrace
+          ./gradlew assembleFirestickRelease --no-configuration-cache --stacktrace | tee build.log
+          echo "EXIT_CODE=${PIPESTATUS[0]}" | tee -a build.log
+          exit ${PIPESTATUS[0]}
 
-      - name: Upload signed APK
+      - name: Upload APK if built
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: DylandosIPTV-Firestick-signed
-          path: android/app/build/outputs/apk/firestick/release/*.apk
+          path: |
+            android/app/build/outputs/apk/firestick/release/*.apk
+            android/dist/*.apk
+          if-no-files-found: warn
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: android/build.log
