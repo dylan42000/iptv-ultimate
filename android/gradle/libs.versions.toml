@@ -17,7 +17,8 @@ pagingCompose = "3.3.4"
 work = "2.9.1"
 coil = "2.7.0"
 coroutines = "1.9.0"
-libvlc = "3.5.1"
+libvlc = "3.6.5"
+# 3.5.1 was only on repo.videolan.org (DNS failing for many). 3.6.5 is on Maven Central and works without videolan repo.
 # Original mpv 0.38.0 from is.xyz.mpv is dead (jitpack 401, mango-cpe DNS fail, tvbox 404)
 # New reliable artifact on Maven Central: io.github.abdallahmehiz:mpv-android-lib:0.1.12 (same package is.xyz.mpv)
 mpv = "0.38.0"
