@@ -73,15 +73,20 @@ class DualMediaEngine @Inject constructor(
     val activeEngine: MediaEngine get() = activeFlow.value
 
     private fun selectEngine(options: PlaybackOptions): MediaEngine {
-        val container = StreamClassifier.containerOf(options.url, options.container)
-        return when {
-            options.streamType == "live" && (container == "mpegts" || container == "rtsp" || container == "rtmp") ->
-                vlc
-            options.streamType == "live" && container == "m3u8" -> mpv
-            container == "dash" -> mpv
-            options.streamType == "live" -> mpv // generic live (e.g. m3u8 already, or unknown)
-            else -> mpv // VOD / series / local files
-        }
+        // FIX 2026-08-01: MPV Maven artifact is dead (is.xyz.mpv:0.38.0 -> jitpack 401, mango-cpe.net DNS fail, tvbox 404)
+        // We ship a local stub MPVLib so the app builds, but it does no decoding.
+        // TEMP: Force LibVLC for ALL streams until you replace stub with reliable
+        // Maven Central artifact: io.github.abdallahmehiz:mpv-android-lib:0.1.12
+        // Original logic kept below for restore:
+        // val container = StreamClassifier.containerOf(options.url, options.container)
+        // return when {
+        //     options.streamType == "live" && (container == "mpegts" || container == "rtsp" || container == "rtmp") -> vlc
+        //     options.streamType == "live" && container == "m3u8" -> mpv
+        //     container == "dash" -> mpv
+        //     options.streamType == "live" -> mpv
+        //     else -> mpv
+        // }
+        return vlc
     }
 
     override fun setSurface(surface: Surface?) {

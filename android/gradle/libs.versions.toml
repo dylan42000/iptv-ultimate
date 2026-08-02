@@ -18,7 +18,10 @@ work = "2.9.1"
 coil = "2.7.0"
 coroutines = "1.9.0"
 libvlc = "3.5.1"
+# Original mpv 0.38.0 from is.xyz.mpv is dead (jitpack 401, mango-cpe DNS fail, tvbox 404)
+# New reliable artifact on Maven Central: io.github.abdallahmehiz:mpv-android-lib:0.1.12 (same package is.xyz.mpv)
 mpv = "0.38.0"
+mpvLib = "0.1.12"
 media3 = "1.4.1"
 datastore = "1.1.1"
 javaxInject = "1"
@@ -62,6 +65,8 @@ coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coi
 
 libvlc = { group = "org.videolan.android", name = "libvlc-all", version.ref = "libvlc" }
 mpv = { group = "is.xyz.mpv", name = "mpv-android", version.ref = "mpv" }
+# Reliable replacement on Maven Central - same is.xyz.mpv package, no jitpack needed
+mpv-lib = { group = "io.github.abdallahmehiz", name = "mpv-android-lib", version.ref = "mpvLib" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -199,8 +199,17 @@ dependencies {
     implementation(libs.coil.compose)
 
     // Native media engines
+    // LibVLC is required — from https://repo.videolan.org/maven (may need DNS fix if host unknown)
     implementation(libs.libvlc)
-    implementation(libs.mpv)
+
+    // MPV: Original artifact is.xyz.mpv:mpv-android:0.38.0 is currently unreliable
+    // (jitpack 401, mango-cpe.net dead, tvbox1201 repo 404, videolan DNS issues).
+    // We now ship a local stub is.xyz.mpv.MPVLib so the project builds with LibVLC-only.
+    // For full MPV HDR/VOD support, use Maven Central artifact:
+    //   io.github.abdallahmehiz:mpv-android-lib:0.1.12 (same package is.xyz.mpv, available on Central)
+    // Uncomment the line below when your network can reach Central and you want MPV back:
+    // implementation("io.github.abdallahmehiz:mpv-android-lib:0.1.12")
+    // implementation(libs.mpv) // OLD - disabled until repo fixed
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }
