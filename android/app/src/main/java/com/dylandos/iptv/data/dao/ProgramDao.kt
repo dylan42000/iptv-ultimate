@@ -16,18 +16,18 @@ interface ProgramDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(program: ProgramEntity): Long
 
-    @Query("SELECT * FROM programs WHERE channelId = :channelId ORDER BY startMs ASC")
+    @Query("SELECT * FROM programs WHERE channelId = :channelId ORDER BY start_ms ASC")
     fun observeByChannel(channelId: Long): Flow<List<ProgramEntity>>
 
     @Query(
-        "SELECT * FROM programs WHERE channelId = :channelId AND startMs <= :now " +
-            "AND endMs > :now LIMIT 1"
+        "SELECT * FROM programs WHERE channelId = :channelId AND start_ms <= :now " +
+            "AND end_ms > :now LIMIT 1"
     )
     suspend fun currentProgram(channelId: Long, now: Long): ProgramEntity?
 
     @Query(
-        "SELECT * FROM programs WHERE channelId = :channelId AND startMs > :now " +
-            "ORDER BY startMs ASC LIMIT :limit"
+        "SELECT * FROM programs WHERE channelId = :channelId AND start_ms > :now " +
+            "ORDER BY start_ms ASC LIMIT :limit"
     )
     suspend fun upcomingPrograms(channelId: Long, now: Long, limit: Int): List<ProgramEntity>
 

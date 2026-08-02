@@ -21,7 +21,7 @@ import androidx.room.PrimaryKey
         )
     ],
     indices = [
-        Index(value = ["channelId", "startMs"]),
+        Index(value = ["channelId", "start_ms"]),
         Index(value = ["channelId"])
     ]
 )

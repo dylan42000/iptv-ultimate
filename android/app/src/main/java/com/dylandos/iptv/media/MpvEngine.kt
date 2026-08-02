@@ -2,7 +2,7 @@ package com.dylandos.iptv.media
 
 import android.content.Context
 import android.view.Surface
-import is.xyz.mpv.MPVLib
+import `is`.xyz.mpv.MPVLib
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
