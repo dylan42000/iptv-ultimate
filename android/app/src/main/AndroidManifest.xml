@@ -41,6 +41,23 @@
         android:theme="@style/Theme.Dylandos"
         tools:targetApi="34">
 
+        <!-- Hilt WorkManager: disable default initializer, we provide HiltWorkerFactory via IptvApplication.Configuration.Provider -->
+        <provider
+            android:name="androidx.work.impl.WorkManagerInitializer"
+            android:authorities="${applicationId}.workmanager-init"
+            android:exported="false"
+            android:enabled="false"
+            tools:node="remove" />
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup" />
+        </provider>
+
         <!-- Leanback launcher -->
         <activity
             android:name=".MainActivity"
