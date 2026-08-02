@@ -7,6 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -96,7 +98,7 @@ private fun MainScaffold(
     val navState by appViewModel.navState.collectAsState()
     val section = navState.section
     val railFocusRequester = remember { FocusRequester() }
-    var railExpanded by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    var railExpanded by remember { mutableStateOf(false) }
 
     // Route content section to the correct paging type.
     LaunchedEffect(section) {

@@ -48,9 +48,9 @@ class RecordingService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val url = intent?.getStringExtra(EXTRA_URL)
-        val channelId = intent.getLongExtra(EXTRA_CHANNEL_ID, 0L)
-        val channelName = intent.getStringExtra(EXTRA_CHANNEL_NAME) ?: "Recording"
-        val title = intent.getStringExtra(EXTRA_TITLE) ?: channelName
+        val channelId = intent?.getLongExtra(EXTRA_CHANNEL_ID, 0L) ?: 0L
+        val channelName = intent?.getStringExtra(EXTRA_CHANNEL_NAME) ?: "Recording"
+        val title = intent?.getStringExtra(EXTRA_TITLE) ?: channelName
         if (url.isNullOrBlank()) {
             stopSelf()
             return START_NOT_STICKY

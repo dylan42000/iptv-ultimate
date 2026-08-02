@@ -102,7 +102,7 @@ object FireStickKeys {
     fun normalizeEvent(event: KeyEvent): KeyEvent {
         if (!isActivate(event.keyCode)) return event
         return KeyEvent(
-            event.time,
+            event.downTime,
             event.eventTime,
             event.action,
             KeyEvent.KEYCODE_DPAD_CENTER,

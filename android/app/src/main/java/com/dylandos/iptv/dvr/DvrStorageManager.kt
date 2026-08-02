@@ -134,8 +134,12 @@ class DvrStorageManager @Inject constructor(
         // Query mounted external volumes through StorageManager.
         val sm = context.getSystemService(Context.STORAGE_SERVICE) as? android.os.storage.StorageManager
             ?: return false
-        return sm.storageVolumes.any { vol ->
-            vol.state == android.os.storage.VolumeInfo.STATE_MOUNTED && vol.isRemovable
+        return try {
+            sm.storageVolumes.any { vol ->
+                vol.state == android.os.Environment.MEDIA_MOUNTED && vol.isRemovable
+            }
+        } catch (_: Exception) {
+            false
         }
     }
 

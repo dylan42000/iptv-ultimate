@@ -20,7 +20,7 @@ import com.dylandos.iptv.data.entity.ChannelEntity
 import com.dylandos.iptv.ui.components.ChannelCard
 import com.dylandos.iptv.ui.navigation.AppSection
 import com.dylandos.iptv.ui.theme.OnDarkMid
-import com.dylandos.iptv.ui.navigation.AppViewModel
+import com.dylandos.iptv.ui.AppViewModel
 
 /**
  * Shared responsive grid for Live TV / Movies / Series. Paging 3 feeds items so

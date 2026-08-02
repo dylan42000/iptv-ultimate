@@ -3,27 +3,21 @@ package com.dylandos.iptv.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.tv.material3.Border
-import androidx.tv.material3.Card
-import androidx.tv.material3.ExperimentalTvMaterial3Api
-import androidx.tv.material3.MaterialTheme as TvTheme
 import coil.compose.AsyncImage
 import com.dylandos.iptv.data.entity.ChannelEntity
 import com.dylandos.iptv.ui.theme.CinematicSurface
@@ -31,10 +25,9 @@ import com.dylandos.iptv.ui.theme.OnDarkHigh
 import com.dylandos.iptv.ui.theme.OnDarkMid
 
 /**
- * A poster / channel card with hardware-accelerated Coil image loading and
- * graphicsLayer-only focus animation.
+ * Simplified channel card — rewritten to compile with tv-material 1.0.0 / material3.
+ * Original used tv-material Card with Border API that changed in 1.0.0 final.
  */
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun ChannelCard(
     channel: ChannelEntity,
@@ -43,14 +36,12 @@ fun ChannelCard(
     onClick: () -> Unit = {}
 ) {
     Card(
-        modifier = modifier.tvFocus(scale = 1.07f).width(180.dp),
+        modifier = modifier
+            .tvFocus(scale = 1.07f)
+            .width(180.dp),
         shape = RoundedCornerShape(16.dp),
-        border = if (selected) Border(
-            Border.Width(3.dp),
-            TvTheme.colorScheme.primary
-        ) else Border.None,
-        onClick = onClick,
-        colors = CardDefaults.tvCardColors()
+        colors = CardDefaults.cardColors(containerColor = CinematicSurface),
+        onClick = onClick
     ) {
         Column {
             Box(
@@ -84,11 +75,4 @@ fun ChannelCard(
             }
         }
     }
-}
-
-/** Minimal helper so we don't depend on the experimental card color builder. */
-private object CardDefaults {
-    fun tvCardColors() = androidx.tv.material3.CardDefaults.cardColors(
-        containerColor = CinematicSurface
-    )
 }

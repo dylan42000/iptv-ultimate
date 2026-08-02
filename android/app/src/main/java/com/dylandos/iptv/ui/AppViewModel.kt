@@ -40,7 +40,7 @@ class AppViewModel @Inject constructor(
     private val _destination = MutableStateFlow<Destination>(Destination.Section)
     val destination: StateFlow<Destination> = _destination.asStateFlow()
 
-    val activeAccount: StateFlow<AccountEntity?> = accountDao.observeActive()
+    val activeAccount: kotlinx.coroutines.flow.Flow<AccountEntity?> = accountDao.observeActive()
 
     /** Restore the card focus index when a detail screen pops back. */
     @Volatile var pendingFocusIndex: Int = 0

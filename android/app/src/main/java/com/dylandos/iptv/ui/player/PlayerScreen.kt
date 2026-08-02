@@ -2,16 +2,17 @@ package com.dylandos.iptv.ui.player
 
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.view.View
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -49,15 +50,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-/**
- * Full-screen player with the "Sparkle Zap" OSD overlay.
- *
- * The overlay occupies the bottom third and appears on D-pad UP/DOWN/CENTER. It
- * shows the channel logo, a current-show progress bar, live stream diagnostics
- * (codec / bitrate / FPS / active engine), and a horizontal preview ribbon of the
- * next 3 EPG programmes. Play/pause, subtitle, audio and record buttons bind
- * directly to the active media engine.
- */
 @Composable
 fun PlayerScreen(
     channelId: Long,
@@ -69,15 +61,8 @@ fun PlayerScreen(
     val playerData by viewModel.data.collectAsState(initial = PlayerUiData())
     var osdVisible by remember { mutableStateOf(true) }
 
-    val context = LocalContext.current
-
-    // Bind the player to the channel and start playback once.
-    LaunchedEffect(channelId) {
-        viewModel.setChannel(channelId)
-    }
-    LaunchedEffect(playerData.channel?.id) {
-        playerData.channel?.let { controller.playChannel(it) }
-    }
+    LaunchedEffect(channelId) { viewModel.setChannel(channelId) }
+    LaunchedEffect(playerData.channel?.id) { playerData.channel?.let { controller.playChannel(it) } }
 
     Box(
         Modifier
@@ -87,10 +72,7 @@ fun PlayerScreen(
                 when (event.toFireStickAction()) {
                     FireStickKeys.Action.UP,
                     FireStickKeys.Action.DOWN,
-                    FireStickKeys.Action.ACTIVATE -> {
-                        osdVisible = !osdVisible
-                        true
-                    }
+                    FireStickKeys.Action.ACTIVATE -> { osdVisible = !osdVisible; true }
                     FireStickKeys.Action.PLAY_PAUSE -> { controller.togglePlayPause(); true }
                     FireStickKeys.Action.PLAY -> { controller.play(); true }
                     FireStickKeys.Action.PAUSE -> { controller.pause(); true }
@@ -103,28 +85,19 @@ fun PlayerScreen(
                 }
             }
     ) {
-        // Hardware video surface.
         AndroidView(
             factory = { ctx ->
                 SurfaceView(ctx).apply {
                     holder.addCallback(object : SurfaceHolder.Callback {
-                        override fun surfaceCreated(holder: SurfaceHolder) {
-                            controller.attachSurface(holder.surface)
-                        }
-
-                        override fun surfaceChanged(h: SurfaceHolder, f: Int, w: Int, h: Int) {
-                        }
-
-                        override fun surfaceDestroyed(holder: SurfaceHolder) {
-                            controller.attachSurface(null)
-                        }
+                        override fun surfaceCreated(holder: SurfaceHolder) { controller.attachSurface(holder.surface) }
+                        override fun surfaceChanged(holder: SurfaceHolder, format: Int, w: Int, h: Int) {}
+                        override fun surfaceDestroyed(holder: SurfaceHolder) { controller.attachSurface(null) }
                     })
                 }
             },
             modifier = Modifier.fillMaxSize()
         )
 
-        // Sparkle Zap OSD (bottom third).
         AnimatedVisibility(
             visible = osdVisible,
             enter = fadeIn(),
@@ -172,56 +145,28 @@ private fun SparkleZapOsd(
 ) {
     GlassPanel(Modifier.fillMaxWidth(), cornerRadius = 16) {
         Column(Modifier.padding(horizontal = 24.dp, vertical = 18.dp)) {
-            // Row 1: logo + channel + show progress + live badge
             Row(verticalAlignment = Alignment.CenterVertically) {
-                AsyncImage(
-                    model = logoUrl,
-                    contentDescription = channelName,
-                    modifier = Modifier.width(96.dp).height(54.dp)
-                )
+                AsyncImage(model = logoUrl, contentDescription = channelName, modifier = Modifier.width(96.dp).height(54.dp))
                 Spacer(Modifier.width(16.dp))
                 Column(Modifier.weight(1f)) {
                     Text(channelName, style = MaterialTheme.typography.titleLarge, color = OnDarkHigh)
-                    Text(
-                        text = currentProgram?.title ?: "No EPG",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = OnDarkMid
-                    )
+                    Text(text = currentProgram?.title ?: "No EPG", style = MaterialTheme.typography.bodyMedium, color = OnDarkMid)
                     if (currentProgram != null) {
                         Spacer(Modifier.height(6.dp))
                         val total = (currentProgram.endMs - currentProgram.startMs).toFloat().coerceAtLeast(1f)
                         val progress = ((System.currentTimeMillis() - currentProgram.startMs) / total).coerceIn(0f, 1f)
-                        Box(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(5.dp)
-                                .background(Color(0xFF2A2E38))
-                        ) {
-                            Box(
-                                Modifier
-                                    .fillMaxWidth(progress)
-                                    .fillMaxHeight()
-                                    .background(BrandRed)
-                            )
+                        Box(Modifier.fillMaxWidth().height(5.dp).background(Color(0xFF2A2E38))) {
+                            Box(Modifier.fillMaxWidth(progress).fillMaxHeight().background(BrandRed))
                         }
                     }
                 }
                 Spacer(Modifier.width(16.dp))
-                Text(
-                    text = if (isRecording) "● REC" else "LIVE",
-                    color = if (isRecording) BrandRed else OnDarkHigh,
-                    style = MaterialTheme.typography.labelLarge
-                )
+                Text(text = if (isRecording) "● REC" else "LIVE", color = if (isRecording) BrandRed else OnDarkHigh, style = MaterialTheme.typography.labelLarge)
             }
-
             Spacer(Modifier.height(12.dp))
-
-            // Row 2: diagnostics + transport controls
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "${diagnostics.engine}  |  ${diagnostics.codec ?: "—"}  |  " +
-                        "${diagnostics.bitrateKbps} kbps  |  ${formatFps(diagnostics.fps)} fps  |  " +
-                        "${diagnostics.resolution ?: "—"}",
+                    text = "${diagnostics.engine} | ${diagnostics.codec ?: "—"} | ${diagnostics.bitrateKbps} kbps | ${formatFps(diagnostics.fps)} fps | ${diagnostics.resolution ?: "—"}",
                     style = MaterialTheme.typography.labelLarge,
                     color = OnDarkMid,
                     modifier = Modifier.weight(1f)
@@ -233,25 +178,13 @@ private fun SparkleZapOsd(
                 TransportButton("AUD") { onNextAudio() }
                 TransportButton("REC") { onToggleRecord() }
             }
-
             Spacer(Modifier.height(12.dp))
-
-            // Row 3: next-3 preview ribbon
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 nextPrograms.take(3).forEach { p ->
-                    Box(
-                        Modifier
-                            .width(220.dp)
-                            .background(Color(0xFF242A36))
-                            .padding(10.dp)
-                    ) {
+                    Box(Modifier.width(220.dp).background(Color(0xFF242A36)).padding(10.dp)) {
                         Column {
                             Text(p.title, style = MaterialTheme.typography.labelLarge, color = OnDarkHigh, maxLines = 1)
-                            Text(
-                                formatRange(p.startMs, p.endMs),
-                                style = MaterialTheme.typography.labelSmall,
-                                color = OnDarkLow
-                            )
+                            Text(formatRange(p.startMs, p.endMs), style = MaterialTheme.typography.labelSmall, color = OnDarkLow)
                         }
                     }
                 }
@@ -264,25 +197,12 @@ private fun SparkleZapOsd(
 private fun TransportButton(label: String, onClick: () -> Unit) {
     val interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
     Box(
-        Modifier
-            .padding(horizontal = 6.dp)
-            .width(64.dp)
-            .height(44.dp)
-            .background(BrandRed.copy(alpha = 0.25f))
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                onClick = onClick
-            ),
+        Modifier.padding(horizontal = 6.dp).width(64.dp).height(44.dp).background(BrandRed.copy(alpha = 0.25f)).clickable(interactionSource = interactionSource, indication = null, onClick = onClick),
         contentAlignment = Alignment.Center
-    ) {
-        Text(label, color = OnDarkHigh, style = MaterialTheme.typography.titleSmall)
-    }
+    ) { Text(label, color = OnDarkHigh, style = MaterialTheme.typography.titleSmall) }
 }
 
-private fun formatFps(fps: Float): String =
-    if (fps > 0f) String.format(Locale.US, "%.0f", fps) else "—"
-
+private fun formatFps(fps: Float): String = if (fps > 0f) String.format(Locale.US, "%.0f", fps) else "—"
 private fun formatRange(startMs: Long, endMs: Long): String {
     val fmt = SimpleDateFormat("HH:mm", Locale.getDefault())
     return "${fmt.format(Date(startMs))} – ${fmt.format(Date(endMs))}"
